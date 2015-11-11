@@ -17,7 +17,7 @@ val webapp = crossProject.settings(
   name := "Client",
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.8.2"
-  ),
+),
   bootSnippet := "webapp.ScalaJSExample().main();"
 ).jvmSettings(
   Revolver.settings:_*

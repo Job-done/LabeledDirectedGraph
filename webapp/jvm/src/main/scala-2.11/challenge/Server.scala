@@ -19,18 +19,20 @@ object Template {
     "<!DOCTYPE html>" +
       html(
         head(
-          title("Labeled Directed Graph Challenge"),
           meta(httpEquiv := "Content-Type", content := "text/html; charset=UTF-8"),
-          script(`type` := "text/javascript", src := "/client-fastopt.js"),
-          script(`type` := "text/javascript", src := "//localhost:12345/workbench.js"),
-          link(
+          title("Labeled Directed Graph Challenge"),
+//          script(`type` := "text/javascript", src := "/client-fastopt.js"),
+//          script(`type` := "text/javascript", src := "//localhost:12345/workbench.js"),
+          script(`type` := "text/javascript", src := "http://d3js.org/d3.v3.min.js"),
+            link(
             rel := "stylesheet",
             `type` := "text/css",
-            href := "META-INF/resources/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
+            href := "app.css"
           )
-        ),
+       ),
         body(margin := 0)(
-          script("challenge.ScalaJSExample().main()")
+          script(`type` := "text/javascript", src :="app.js")
+          /*script("challenge.ScalaJSExample().main()")*/
         )
       )
 }

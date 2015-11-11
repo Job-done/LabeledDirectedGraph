@@ -99,7 +99,7 @@ trait LabeledDirectedGraphImpl extends DirectedGraph {
   protected def newVertex(lbl: String) = Node(lbl)
 }
 
-object Example extends App {
+object Example  {
 
   val graph = new LabeledDirectedGraphImpl {}
 
