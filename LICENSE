@@ -1,22 +1,15 @@
-The MIT License (MIT)
+The EUPL V.1.1 License
 
-Copyright (c) 2015 Job-done
+Copyright ©2015 by F.W. van den Berg
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+2015-11-11 scalajs-labeled-directed-graph-challengeXX
+Licensed under the EUPL V.1.1
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This Software is provided to You under the terms of the European Union Public License (the "EUPL") version 1.1
+ as published by the European Union. Any use of this Software, other than as authorized under this License is
+strictly prohibited (to the extent such use is covered by a right of the copyright holder of this Software).
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+This Software is provided under the License on an "AS IS" basis and without warranties of any kind concerning
+the Software, including without limitation merchantability, fitness for a particular purpose, absence of defects
+or errors, accuracy, and non-infringement of intellectual property rights other than copyright. This disclaimer
+of warranty is an essential part of the License and a condition for the grant of any rights to this Software.
