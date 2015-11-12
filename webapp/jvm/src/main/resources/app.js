@@ -255,6 +255,10 @@ function mousedown() {
   node.y = point[1];
   nodes.push(node);
 
+  var result = challenge.ScalaJSExample().nodeCreated(node.id);
+
+  console.log(result + "res");
+
   restart();
 }
 
@@ -320,12 +324,14 @@ function keydown() {
       selected_node = null;
       restart();
       break;
+/*
     case 66: // B
       if(selected_link) {
         // set link direction to both left and right
         selected_link.left = true;
         selected_link.right = true;
       }
+*/
       restart();
       break;
     case 76: // L

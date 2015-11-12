@@ -34,4 +34,15 @@ Follow these steps to get started:
 
         > re-stop
 
-8. [Learn](http://lihaoyi.github.io/hands-on-scala-js/#Autowire) about Autowire in Scala/Scala.js
+8. [Learn](http://lihaoyi.github.io/hands-on-scala-js/#Autowire) about Autowire in Hands-on Scala.js.
+## Client usage
+
+Click in the open space to add a node, drag from one node to another to add an edge. 
+Ctrl-drag a node to move the graph layout. 
+Click a node or an edge to select it.
+
+When a node is selected, Delete removes the node. 
+When an edge is selected: L(eft), R(ight) change direction, Delete removes the edge.
+** Build Configuration
+The `crossProject` function provided by the Scala.js plugin provides to set up two projects: one in the `webapp/js/` folder and one in the `webapp/jvm/` folder.
+The common definition of the API is shared between them in the `shared` folder.

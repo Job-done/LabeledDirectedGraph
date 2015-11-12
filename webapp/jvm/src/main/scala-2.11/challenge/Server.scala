@@ -21,7 +21,7 @@ object Template {
         head(
           meta(httpEquiv := "Content-Type", content := "text/html; charset=UTF-8"),
           title("Labeled Directed Graph Challenge"),
-//          script(`type` := "text/javascript", src := "/client-fastopt.js"),
+          script(`type` := "text/javascript", src := "/client-fastopt.js"),
 //          script(`type` := "text/javascript", src := "//localhost:12345/workbench.js"),
           script(`type` := "text/javascript", src := "http://d3js.org/d3.v3.min.js"),
             link(
@@ -82,6 +82,7 @@ object Server extends SimpleRoutingApp with Api {
   }
 
   def nodeCreate(): UUID = {UUID.randomUUID()}
+  def nodeCreate(id : String): UUID = {UUID.randomUUID()}
   def nodeRead(uuid: UUID): Option[(Int, String)] = {Some(1,"")}
   def nodeUpdate(uuid: UUID): UUID = {UUID.randomUUID()}
   def nodeDelete(uuid: UUID) = {}

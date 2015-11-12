@@ -1,5 +1,7 @@
 package challenge
 
+import java.util.UUID
+
 import autowire._
 import org.scalajs.dom
 import org.scalajs.dom.MouseEvent
@@ -27,8 +29,13 @@ object Client extends autowire.Client[Js.Value, Reader, Writer] {
 @JSExport
 object ScalaJSExample {
   @JSExport
-  def main(): Unit = {
+  def nodeCreated(y: Int): Future[UUID] = {
+    def a: Future[UUID] = Client[Api].nodeCreate(y.toString).call()
+    a
+  }
 
+  @JSExport
+  def main(): Unit = {
     val inputBox = input.render
     val outputBox = div.render
     val actionButton = button("Do something").render
@@ -52,7 +59,7 @@ object ScalaJSExample {
 
     actionButton.onclick =
       (_: MouseEvent) => {
-        val result = Client[Api].nodeCreate().call().foreach{item => outputBox.innerHTML = item.toString}
+        // Client[Api].nodeCreate().call().foreach{item => outputBox.innerHTML = item.toString}
 
       }
 
