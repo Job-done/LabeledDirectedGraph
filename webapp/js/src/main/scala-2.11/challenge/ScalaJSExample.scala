@@ -1,19 +1,20 @@
 package challenge
 
-import java.util.UUID
-
 import autowire._
 import org.scalajs.dom
-import org.scalajs.dom.MouseEvent
 import upickle.Js
 import upickle.default._
 
 import scala.concurrent.Future
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
+import scala.util.{Failure, Success}
 import scalatags.JsDom.all._
 
+
 object Client extends autowire.Client[Js.Value, Reader, Writer] {
+
   override def doCall(req: Request): Future[Js.Value] = dom.ext.Ajax.post(
     url = "/api/" + req.path.mkString("/"),
     data = upickle.json.write(Js.Obj(req.args.toSeq: _*))
@@ -28,10 +29,45 @@ object Client extends autowire.Client[Js.Value, Reader, Writer] {
 
 @JSExport
 object ScalaJSExample {
+  // set up initial nodes and links
+  //  - nodes are known by 'id', not by index in array.
+  //  - reflexive edges are indicated on the node (as a bold black circle).
+  //  - links are always source < target; edge directions are set by 'left' and 'right'.
+
   @JSExport
-  def nodeCreated(y: Int): Future[UUID] = {
-    def a: Future[UUID] = Client[Api].nodeCreate(y.toString).call()
-    a
+  val nodes = js.Array[js.Dynamic](
+  js.Dynamic.literal(id= 0, reflexive= false, uuid =  "0"),
+  js.Dynamic.literal(id= 1, reflexive= true, uuid =  "1" ))
+
+  @JSExport
+  val links = /*new js.Array[js.Dynamic] */
+    js.Array(
+      js.Dynamic.literal(source = nodes(0), target = nodes(1), left = false, right = true/*, weight = 0*/))
+  @JSExport
+  var lastNodeId = 1
+
+  @JSExport
+  def linkCreated(pSource: js.Dynamic, pTarget: js.Dynamic, pLeft: Boolean, pRight: Boolean) = {
+    println(s"${pSource.id} ,${pTarget.id}")
+
+
+    links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
+  }
+
+
+  @JSExport
+  def nodeCreated(x0: Double, y0: Double) = {
+    lastNodeId += 1
+
+    Client[Api].nodeCreate(lastNodeId.toString).call().onComplete {
+      case Success(value) => {
+        nodes += js.Dynamic.literal(id = lastNodeId, reflexive = false, x = x0, y = y0, uuid = value.toString)
+
+        // TODO  restart()
+      }
+      case Failure(e) => e.printStackTrace
+    }
+
   }
 
   @JSExport
@@ -56,12 +92,6 @@ object ScalaJSExample {
     inputBox.onkeyup = { (e: dom.Event) =>
       updateOutput()
     }
-
-    actionButton.onclick =
-      (_: MouseEvent) => {
-        // Client[Api].nodeCreate().call().foreach{item => outputBox.innerHTML = item.toString}
-
-      }
 
     updateOutput()
     dom.document.body.appendChild(

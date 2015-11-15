@@ -20,17 +20,6 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
   import DirectedGraphSpec._
 
   "A Graph" when {
-    "empty" should {
-      "be empty" in {
-        val graph = new LabeledDirectedGraphImpl
-        assert(graph.graphStore.isEmpty)
-      }
-      "complain on peek" in {
-      }
-      "complain on pop" in {
-        // ...
-      }
-    }
     "filled in" should {
 
       "have 6 nodes" in {
@@ -72,7 +61,7 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
       }
     }
   }
-  "nodes to be deleted" when {
+  "and some nodes are deleted" when {
     val graph0 = new LabeledDirectedGraphImpl
     val n1 = graph0.Node("start")
     val n2 = graph0.Node("n2")
@@ -89,7 +78,7 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
     n4 --> n6 costs = 1
     n5 --> n6 costs = 3
 
-    "beginning node deleted" should {
+    "the beginning node is deleted" should {
 
       graph0.removeNode(n1.uuid)
 
@@ -118,7 +107,7 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
 
     }
 
-    "starting and ending node deleted" should {
+    "starting and ending nodes are deleted" should {
       val graph0 = new LabeledDirectedGraphImpl
       val n1 = graph0.Node("start")
       val n2 = graph0.Node("n2")
@@ -160,7 +149,7 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
 
   }
 
-  "link to be deleted" when {
+  "a link is being deleted" when {
     val graph0 = new LabeledDirectedGraphImpl
     val n1 = graph0.Node("start")
     val n2 = graph0.Node("n2")
@@ -177,11 +166,10 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
     n4 --> n6 costs = 1
     n5 --> n6 costs = 3
 
-    graph0.removeLink(n2.uuid, n4.uuid)
-    "beginning node deleted" should {
-
+    "with a link is deleted between n2 and 4" should {
+      graph0.removeLink(n2.uuid, n4.uuid)
       "show in node labeled 'n2' 2 links to n4 and n5, it's only referenced by node n1" in {
-        assert(graph0.graphStore.get(n2).contains(graph0.NodeAttribs("n2", Set( graph0.EdgeArrow(n5)), Set(n1))))
+        assert(graph0.graphStore.get(n2).contains(graph0.NodeAttribs("n2", Set(graph0.EdgeArrow(n5)), Set(n1))))
       }
 
 
@@ -190,7 +178,7 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
       }
 
       "show in node labeled 'n4' 1 link to n6 only, it's referenced by nodes n2 and n3" in {
-        assert(graph0.graphStore.get(n4).contains(graph0.NodeAttribs("n4", Set(graph0.EdgeArrow(n6)), Set( n3))))
+        assert(graph0.graphStore.get(n4).contains(graph0.NodeAttribs("n4", Set(graph0.EdgeArrow(n6)), Set(n3))))
       }
 
       "show in node labeled 'n5' 1 link to n6 only,, it's referenced by nodes n2 and n6" in {
@@ -203,7 +191,7 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
 
     }
 
-    "starting and ending node deleted" should {
+    "non-existing link is attempted to be deleted" should {
       val graph0 = new LabeledDirectedGraphImpl
       val n1 = graph0.Node("start")
       val n2 = graph0.Node("n2")
@@ -241,6 +229,42 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
       }
     }
 
+    "a link is attempted to be deleted but the nodes are in the reversed order" should {
+      val graph0 = new LabeledDirectedGraphImpl
+      val n1 = graph0.Node("start")
+      val n2 = graph0.Node("n2")
+      val n3 = graph0.Node("n3")
+      val n4 = graph0.Node("n4")
+      val n5 = graph0.Node("n5")
+      val n6 = graph0.Node("end")
 
+      n1 --> n2 costs = 2
+      n1 --> n3 costs = 1
+      n2 --> n4 costs = 1
+      n3 --> n4 costs = 3
+      n2 --> n5 costs = 1
+      n4 --> n6 costs = 1
+      n5 --> n6 costs = 3
+
+      graph0.removeLink(n4.uuid, n2.uuid)
+
+      "show in node labeled 'n2' 2 links to n4 and n5, it's only referenced by node n1" in {
+        assert(graph0.graphStore.get(n2).contains(graph0.NodeAttribs("n2", Set(graph0.EdgeArrow(n4), graph0.EdgeArrow(n5)), Set(n1))))
+      }
+
+
+      "show in node labeled 'n3' 1 link to n4 only, it's only referenced by node n1" in {
+        assert(graph0.graphStore.get(n3).contains(graph0.NodeAttribs("n3", Set(graph0.EdgeArrow(n4)), Set(n1))))
+      }
+
+
+      "show in node labeled 'n4' 1 link to n6 only, it's referenced by nodes n2 and n3" in {
+        assert(graph0.graphStore.get(n4).contains(graph0.NodeAttribs("n4", Set(graph0.EdgeArrow(n6)), Set(n2, n3))))
+      }
+
+      "show in node labeled 'n5' 1 link to n6 only,, it's referenced by nodes n2 and n6" in {
+        assert(graph0.graphStore.get(n5).contains(graph0.NodeAttribs("n5", Set(graph0.EdgeArrow(n6)), Set(n2))))
+      }
+    }
   }
 }

@@ -115,8 +115,8 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   def removeLink(arrowTail: UUID, arrowHead: UUID) = {
     val (head, tail) = (Node(arrowTail), Node(arrowHead))
     removeStartingEnds(head, tail)
-    removeEndingEnds(head, tail)
-    removeStartingEnds(tail, head)
+//    removeEndingEnds(head, tail)
+//    removeStartingEnds(tail, head)
     removeEndingEnds(tail, head)
   }
 
