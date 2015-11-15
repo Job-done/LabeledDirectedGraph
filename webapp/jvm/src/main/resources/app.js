@@ -229,7 +229,7 @@ function restart() {
                 link = {source: source, target: target, left: false, right: false};
                 link[direction] = true;
                 challenge.ScalaJSExample().linkCreated(  source, target, false, false);
-                //challenge.ScalaJSExample().links.push(link);
+                challenge.ScalaJSExample().links.push(link);
             }
 
             // select new link

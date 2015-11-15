@@ -18,7 +18,7 @@ trait Api {
   def nodeUpdate(uuid: UUID): UUID
   def nodeDelete(uuid: UUID)
 
-  def linkCreate(line: Link): Option[Link]
+  def linkCreate(start: String, stop: String): (UUID, UUID)
   def linkRead(line: Link): Option[Link]
   def linkUpdate(oldLine: Link, newLine: Link): Option[Link]
   def linkDelete(line: Link)

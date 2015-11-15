@@ -87,7 +87,7 @@ object Server extends SimpleRoutingApp with Api {
   def nodeUpdate(uuid: UUID): UUID = {UUID.randomUUID()}
   def nodeDelete(uuid: UUID) = {}
 
-  def linkCreate(line: Link): Option[Link] = Some(Link.dummyLink())
+  def linkCreate(start: String, stop: String):(UUID, UUID) = (UUID.fromString(start),UUID.fromString(stop))
   def linkRead(line : Link): Option[Link] = Some(Link.dummyLink())
   def linkUpdate(oldLine: Link, newLine: Link): Option[Link] = {Some(Link.dummyLink())}
   def linkDelete(line: Link) = {}

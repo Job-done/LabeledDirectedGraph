@@ -42,16 +42,23 @@ object ScalaJSExample {
   @JSExport
   val links = /*new js.Array[js.Dynamic] */
     js.Array(
-      js.Dynamic.literal(source = nodes(0), target = nodes(1), left = false, right = true/*, weight = 0*/))
+      js.Dynamic.literal(source = nodes(0), target = nodes(1), left = false, right = true /*, weight = 0*/))
   @JSExport
   var lastNodeId = 1
 
   @JSExport
   def linkCreated(pSource: js.Dynamic, pTarget: js.Dynamic, pLeft: Boolean, pRight: Boolean) = {
-    println(s"${pSource.id} ,${pTarget.id}")
+    println(s"${pSource.uuid} ,${pTarget.uuid}")
+    val a = Client[Api].linkCreate(pSource.uuid.toString, pTarget.uuid.toString).call().onComplete {
+      case Success(value) => {
+        println(s"Send       :  ${pSource.uuid.toString},${pTarget.uuid.toString}")
+        println(s"server says: $value")
+        // links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
 
-
-    links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
+        // TODO  restart()
+      }
+      case Failure(e) => e.printStackTrace
+    }
   }
 
 
