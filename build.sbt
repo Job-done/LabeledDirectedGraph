@@ -6,6 +6,7 @@ import sbt.Keys._
 val webapp = crossProject.settings(
   scalaVersion := "2.11.7",
   version := "0.1-SNAPSHOT",
+  scalacOptions ++= Seq("-feature"),
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "upickle" % "0.3.6",
     "com.lihaoyi" %%% "autowire" % "0.2.5",
@@ -17,7 +18,7 @@ val webapp = crossProject.settings(
   name := "Client",
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.8.2"
-  ),
+),
   bootSnippet := "webapp.ScalaJSExample().main();"
 ).jvmSettings(
   Revolver.settings:_*
@@ -27,7 +28,8 @@ val webapp = crossProject.settings(
     "io.spray" %% "spray-can" % "1.3.3",
     "io.spray" %% "spray-routing" % "1.3.3",
     "com.typesafe.akka" %% "akka-actor" % "2.4.0",
-    "org.webjars" % "bootstrap" % "3.3.4"
+//    "org.webjars" % "bootstrap" % "3.3.4",
+    "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
   )
 )
 
