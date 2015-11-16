@@ -388,6 +388,7 @@ function keyup() {
 }
 
 // app starts here
+challenge.ScalaJSExample().GraphSetUp()
 svg.on('mousedown', mousedown)
     .on('mousemove', mousemove)
     .on('mouseup', mouseup);

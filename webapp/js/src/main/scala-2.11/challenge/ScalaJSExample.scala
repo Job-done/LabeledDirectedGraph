@@ -31,6 +31,7 @@ object ScalaJSExample {
   //  - reflexive edges are indicated on the node (as a bold black circle).
   //  - links are always source < target; edge directions are set by 'left' and 'right'.
 
+
   @JSExport
   val nodes = js.Array[js.Dynamic](
   js.Dynamic.literal(id= 0, reflexive= false, uuid =  "0"),
@@ -42,6 +43,12 @@ object ScalaJSExample {
       js.Dynamic.literal(source = nodes(0), target = nodes(1), left = false, right = true /*, weight = 0*/))
   @JSExport
   var lastNodeId = 1
+
+  @JSExport
+  def GraphSetUp() ={
+
+  }
+
 
   @JSExport
   def linkCreated(pSource: js.Dynamic, pTarget: js.Dynamic, pLeft: Boolean, pRight: Boolean) = {

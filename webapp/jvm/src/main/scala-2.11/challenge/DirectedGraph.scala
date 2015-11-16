@@ -83,12 +83,13 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   }
 
   /**
-    *  Companion object Node
-    *  Apply methode creates a named or unnamed Node
-    */
+   * Companion object Node
+   * Apply methode creates a named or unnamed Node
+   */
   object Node {
     // Creation of a named node and maintaining label uniqueness
-    def apply(label: String) = { // Called by Server.nodeCreate
+    def apply(label: String) = {
+      // Called by Server.nodeCreate
       def mkUnqLabel(lbl: String): String = {
         @tailrec
         def mkUnqInner(lbl: String, count: Int): String = {
@@ -114,15 +115,6 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
 
   override def toString = graphStore.toString()
 
-  /**
-   * Delete a link
-   */
-   def removeLink(arrowTail: UUID, arrowHead: UUID) = { // Called by Server.linkDelete
-    val (head, tail) = (Node(arrowTail), Node(arrowHead))
-    removeStartingEnds(head, tail)
-    removeEndingEnds(tail, head)
-  }
-
   // Remove the node from the connected node list
   def removeStartingEnds(nod: Node, node2removed: Node) = {
     if (graphStore.contains(nod)) {
@@ -138,9 +130,20 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   }
 
   /**
+   * Delete a link
+   */
+  def removeLink(arrowTail: UUID, arrowHead: UUID) = {
+    // Called by Server.linkDelete
+    val (head, tail) = (Node(arrowTail), Node(arrowHead))
+    removeStartingEnds(head, tail)
+    removeEndingEnds(tail, head)
+  }
+
+  /**
    * Delete a Node
    */
-  def removeNode(uuid: UUID) = { // Called by nodeDelete
+  def removeNode(uuid: UUID) = {
+    // Called by nodeDelete
     val node2remove = new Node(uuid)
     val nodeAttr = graphStore.remove(node2remove)
     if (nodeAttr.isDefined) {
@@ -154,14 +157,24 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   /**
    * Creation of a link
    */
-  def createLink(start: String, stop: String): (UUID, UUID) = { // Called Server.linkCreate
+  def createLink(start: String, stop: String): (UUID, UUID) = {
+    // Called Server.linkCreate
     lazy val uuid0 = UUID.fromString("0")
-    val uuid1= UUID.fromString(start)
-    val uuid2= UUID.fromString(stop)
+    val uuid1 = UUID.fromString(start)
+    val uuid2 = UUID.fromString(stop)
 
     Node(uuid1) --> Node(uuid2)
     (uuid1, uuid2)
   }
+
+/*
+  def readGraph = {
+    for (key <- graphStore.keys;
+    val elem = graphStore(key)) yield
+
+    (key, graphStore)
+  }
+*/
 
   protected def newEdge(from: Node, to: Node) = new LinkX(from, to)
 }

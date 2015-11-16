@@ -2,9 +2,8 @@ package challenge
 
 import java.util.UUID
 
-case class Link(from: UUID, to: UUID)
-
 trait Api {
+  // def readGraph() :
   def nodeCreate(id: String): UUID
   def nodeDelete(uuid: String) : Unit
 
