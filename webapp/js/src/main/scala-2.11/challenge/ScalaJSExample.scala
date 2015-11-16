@@ -10,7 +10,6 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.{Failure, Success}
-import scalatags.JsDom.all._
 
 
 object Client extends autowire.Client[Js.Value, Reader, Writer] {
@@ -78,39 +77,27 @@ object ScalaJSExample {
   }
 
   @JSExport
-  def main(): Unit = {
-    val inputBox = input.render
-    val outputBox = div.render
-    val actionButton = button("Do something").render
+  def nodeDeleted(uuid: String) = {
+    Client[Api].nodeDelete(uuid).call().onComplete {
+      case Success(value) => {
 
-    def updateOutput() = {
-      Client[Api].list(inputBox.value).call().foreach { paths =>
-        outputBox.innerHTML = ""
-        outputBox.appendChild(
-          ul(
-            for (path <- paths) yield {
-              li(path)
-            }
-          ).render
-        )
+        // TODO  restart()
       }
+      case Failure(e) => e.printStackTrace
     }
 
-    inputBox.onkeyup = { (e: dom.Event) =>
-      updateOutput()
-    }
-
-    updateOutput()
-    dom.document.body.appendChild(
-      div(
-        cls := "container",
-        h1("File Browser"),
-        p("Enter a file path to s"),
-        inputBox,
-
-        actionButton,
-        outputBox
-      ).render
-    )
   }
+
+  @JSExport
+  def linkDeleted(uuid1: String, uuid2: String) = {
+    Client[Api].linkDelete(uuid1, uuid2).call().onComplete {
+      case Success(value) => {
+        println("Link deleted")
+        // TODO  restart()
+      }
+      case Failure(e) => e.printStackTrace
+    }
+  }
+
+
 }

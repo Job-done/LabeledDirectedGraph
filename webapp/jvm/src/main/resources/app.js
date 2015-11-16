@@ -87,7 +87,7 @@ function tick() {
 }
 
 // update graph (called when needed)
-function restart() {
+function refresh() {
     // path (link) group
     path = path.data(challenge.ScalaJSExample().links);
 
@@ -123,7 +123,7 @@ function restart() {
             if (mousedown_link === selected_link) selected_link = null;
             else selected_link = mousedown_link;
             selected_node = null;
-            restart();
+            refresh();
         });
 
     // remove old links
@@ -185,7 +185,7 @@ function restart() {
                 .classed('hidden', false)
                 .attr('d', 'M' + mousedown_node.x + ',' + mousedown_node.y + 'L' + mousedown_node.x + ',' + mousedown_node.y);
 
-            restart();
+            refresh();
         })
         .on('mouseup', function (d) {
             if (!mousedown_node) return;
@@ -218,6 +218,7 @@ function restart() {
                 direction = 'left';
             }
 
+            // Link create
             var link;
             link = challenge.ScalaJSExample().links.filter(function(l) {
                 return (l.source === source && l.target === target);
@@ -235,7 +236,7 @@ function restart() {
             // select new link
             selected_link = link;
             selected_node = null;
-            restart();
+            refresh();
         });
 
     // show node IDs
@@ -272,9 +273,7 @@ function mousedown() {
 
     var result = challenge.ScalaJSExample().nodeCreated(point[0], point[1]);
 
-//    console.log(result + "res");
-
-    restart();
+    refresh();
 }
 
 function mousemove() {
@@ -283,7 +282,7 @@ function mousemove() {
     // update drag line
     drag_line.attr('d', 'M' + mousedown_node.x + ',' + mousedown_node.y + 'L' + d3.mouse(this)[0] + ',' + d3.mouse(this)[1]);
 
-    restart();
+    refresh();
 }
 
 function mouseup() {
@@ -330,14 +329,19 @@ function keydown() {
         case 8: // backspace
         case 46: // delete
             if (selected_node) {
+                challenge.ScalaJSExample().nodeDeleted(selected_node.uuid)
                 challenge.ScalaJSExample().nodes.splice(challenge.ScalaJSExample().nodes.indexOf(selected_node), 1);
                 spliceLinksForNode(selected_node);
+
+
             } else if (selected_link) {
+                challenge.ScalaJSExample().linkDeleted(selected_link.source.uuid, selected_link.target.uuid);
                 challenge.ScalaJSExample().links.splice(challenge.ScalaJSExample().links.indexOf(selected_link), 1);
             }
             selected_link = null;
+            selected_link = null;
             selected_node = null;
-            restart();
+            refresh();
             break;
             /*
              case 66: // B
@@ -347,7 +351,7 @@ function keydown() {
              selected_link.right = true;
              }
              */
-            restart();
+            refresh();
             break;
         case 76: // L
             if (selected_link) {
@@ -355,7 +359,7 @@ function keydown() {
                 selected_link.left = true;
                 selected_link.right = false;
             }
-            restart();
+            refresh();
             break;
         case 82: // R
             if (selected_node) {
@@ -366,7 +370,7 @@ function keydown() {
                 selected_link.left = false;
                 selected_link.right = true;
             }
-            restart();
+            refresh();
             break;
     }
 }
@@ -390,4 +394,4 @@ svg.on('mousedown', mousedown)
 d3.select(window)
     .on('keydown', keydown)
     .on('keyup', keyup);
-restart();
+refresh();

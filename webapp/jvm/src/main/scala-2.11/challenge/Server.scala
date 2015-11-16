@@ -22,16 +22,16 @@ object Template {
           meta(httpEquiv := "Content-Type", content := "text/html; charset=UTF-8"),
           title("Labeled Directed Graph Challenge"),
           script(`type` := "text/javascript", src := "/client-fastopt.js"),
-//          script(`type` := "text/javascript", src := "//localhost:12345/workbench.js"),
+          //          script(`type` := "text/javascript", src := "//localhost:12345/workbench.js"),
           script(`type` := "text/javascript", src := "http://d3js.org/d3.v3.min.js"),
-            link(
+          link(
             rel := "stylesheet",
             `type` := "text/css",
             href := "app.css"
           )
-       ),
+        ),
         body(margin := 0)(
-          script(`type` := "text/javascript", src :="app.js")
+          script(`type` := "text/javascript", src := "app.js")
           /*script("challenge.ScalaJSExample().main()")*/
         )
       )
@@ -44,6 +44,8 @@ object AutowireServer extends autowire.Server[Js.Value, Reader, Writer] {
 }
 
 object Server extends SimpleRoutingApp with Api {
+  val graph = new LabeledDirectedGraphImpl
+
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     startServer("0.0.0.0", port = 8080) {
@@ -81,15 +83,39 @@ object Server extends SimpleRoutingApp with Api {
     files.filter(_.startsWith(chunks.last))
   }
 
-  def nodeCreate(): UUID = {UUID.randomUUID()}
-  def nodeCreate(id : String): UUID = {UUID.randomUUID()}
-  def nodeRead(uuid: UUID): Option[(Int, String)] = {Some(1,"")}
-  def nodeUpdate(uuid: UUID): UUID = {UUID.randomUUID()}
-  def nodeDelete(uuid: UUID) = {}
+  def nodeCreate(): UUID = {
+    UUID.randomUUID()
+  }
 
-  def linkCreate(start: String, stop: String):(UUID, UUID) = (UUID.fromString(start),UUID.fromString(stop))
-  def linkRead(line : Link): Option[Link] = Some(Link.dummyLink())
-  def linkUpdate(oldLine: Link, newLine: Link): Option[Link] = {Some(Link.dummyLink())}
-  def linkDelete(line: Link) = {}
+  def nodeCreate(id: String): UUID = {
+    val ret = graph.Node(id).uuid
+    println("Server:" + graph)
+    ret
+  }
+
+  def nodeRead(uuid: UUID): Option[(Int, String)] = {
+    Some(1, "")
+  }
+
+  def nodeUpdate(uuid: UUID): UUID = {
+    UUID.randomUUID()
+  }
+
+  def nodeDelete(uuid: String): Unit = {
+    graph.removeNode(UUID.fromString(uuid))
+  }
+
+  def linkCreate(start: String, stop: String): (UUID, UUID) = {
+    val ret =graph.createLink(start, stop)
+    println("Server: Link added " + graph)
+    ret
+  }
+
+//  def linkRead(line: Link): Option[Link] = Some(Link.dummyLink())
+
+  def linkDelete(uuid1: String, uuid2: String) = {
+    graph.removeLink(UUID.fromString(uuid1), UUID.fromString(uuid2))
+    println("Server: Link deleted " + graph)
+  }
 
 }

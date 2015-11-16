@@ -145,7 +145,14 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
 
   }
 
+  def createLink(start: String, stop: String): (UUID, UUID) = {
+    lazy val uuid0 = UUID.fromString("0")
+    val uuid1= UUID.fromString(start)
+    val uuid2= UUID.fromString(stop)
+
+    Node(uuid1) --> Node(uuid2)
+    (uuid1, uuid2)
+  }
+
   protected def newEdge(from: Node, to: Node) = new LinkX(from, to)
-
-
 }
