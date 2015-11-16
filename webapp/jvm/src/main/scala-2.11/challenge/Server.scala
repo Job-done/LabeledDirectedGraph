@@ -76,42 +76,22 @@ object Server extends SimpleRoutingApp with Api {
     }
   }
 
-  def list(path: String) = {
-    val chunks = path.split("/", -1)
-    val prefix = "./" + chunks.init.mkString("/")
-    val files = Option(new java.io.File(prefix).list()).toSeq.flatten
-    files.filter(_.startsWith(chunks.last))
-  }
-
-  def nodeCreate(): UUID = {
-    UUID.randomUUID()
-  }
-
   def nodeCreate(id: String): UUID = {
     val ret = graph.Node(id).uuid
-    println("Server:" + graph)
+    println("Server: Node created" + graph)
     ret
-  }
-
-  def nodeRead(uuid: UUID): Option[(Int, String)] = {
-    Some(1, "")
-  }
-
-  def nodeUpdate(uuid: UUID): UUID = {
-    UUID.randomUUID()
   }
 
   def nodeDelete(uuid: String): Unit = {
     graph.removeNode(UUID.fromString(uuid))
+    println("Server: Node deleted" + graph)
   }
 
   def linkCreate(start: String, stop: String): (UUID, UUID) = {
     val ret =graph.createLink(start, stop)
-    println("Server: Link added " + graph)
+    println("Server: Link created " + graph)
     ret
   }
-
-//  def linkRead(line: Link): Option[Link] = Some(Link.dummyLink())
 
   def linkDelete(uuid1: String, uuid2: String) = {
     graph.removeLink(UUID.fromString(uuid1), UUID.fromString(uuid2))

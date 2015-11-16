@@ -14,25 +14,24 @@ object DirectedGraphSpec {
   val n6 = graph Node "end"
 }
 
-
 class DirectedGraphSpec extends WordSpec with GivenWhenThen {
 
   import DirectedGraphSpec._
 
-  "A Graph" when {
-    "filled in" should {
+  "A Labeled Directed Graph" when {
+    "partial filled in" should {
 
       "have 6 nodes" in {
         assert(graph.graphStore.size == 6)
       }
 
-      n1 --> n2 costs = 2
-      n1 --> n3 costs = 1
-      n2 --> n4 costs = 1
-      n3 --> n4 costs = 3
-      n2 --> n5 costs = 1
-      n4 --> n6 costs = 1
-      n5 --> n6 costs = 3
+      n1 --> n2 weigth = 2
+      n1 --> n3 weigth = 1
+      n2 --> n4 weigth = 1
+      n3 --> n4 weigth = 3
+      n2 --> n5 weigth = 1
+      n4 --> n6 weigth = 1
+      n5 --> n6 weigth = 3
 
       "show in node labeled 'start' 2 links to n2 and n3 and since it's starting point it has no references." in {
         assert(graph.graphStore.get(n1).contains(graph.NodeAttribs("start", Set(graph.EdgeArrow(n2), graph.EdgeArrow(n3)), Set())))
@@ -70,13 +69,13 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
     val n5 = graph0.Node("n5")
     val n6 = graph0.Node("end")
 
-    n1 --> n2 costs = 2
-    n1 --> n3 costs = 1
-    n2 --> n4 costs = 1
-    n3 --> n4 costs = 3
-    n2 --> n5 costs = 1
-    n4 --> n6 costs = 1
-    n5 --> n6 costs = 3
+    n1 --> n2 weigth = 2
+    n1 --> n3 weigth = 1
+    n2 --> n4 weigth = 1
+    n3 --> n4 weigth = 3
+    n2 --> n5 weigth = 1
+    n4 --> n6 weigth = 1
+    n5 --> n6 weigth = 3
 
     "the beginning node is deleted" should {
 
@@ -116,13 +115,13 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
       val n5 = graph0.Node("n5")
       val n6 = graph0.Node("end")
 
-      n1 --> n2 costs = 2
-      n1 --> n3 costs = 1
-      n2 --> n4 costs = 1
-      n3 --> n4 costs = 3
-      n2 --> n5 costs = 1
-      n4 --> n6 costs = 1
-      n5 --> n6 costs = 3
+      n1 --> n2 weigth = 2
+      n1 --> n3 weigth = 1
+      n2 --> n4 weigth = 1
+      n3 --> n4 weigth = 3
+      n2 --> n5 weigth = 1
+      n4 --> n6 weigth = 1
+      n5 --> n6 weigth = 3
 
       graph0.removeNode(n6.uuid)
       graph0.removeNode(n1.uuid)
@@ -158,13 +157,13 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
     val n5 = graph0.Node("n5")
     val n6 = graph0.Node("end")
 
-    n1 --> n2 costs = 2
-    n1 --> n3 costs = 1
-    n2 --> n4 costs = 1
-    n3 --> n4 costs = 3
-    n2 --> n5 costs = 1
-    n4 --> n6 costs = 1
-    n5 --> n6 costs = 3
+    n1 --> n2 weigth = 2
+    n1 --> n3 weigth = 1
+    n2 --> n4 weigth = 1
+    n3 --> n4 weigth = 3
+    n2 --> n5 weigth = 1
+    n4 --> n6 weigth = 1
+    n5 --> n6 weigth = 3
 
     "with a link is deleted between n2 and 4" should {
       graph0.removeLink(n2.uuid, n4.uuid)
@@ -200,13 +199,13 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
       val n5 = graph0.Node("n5")
       val n6 = graph0.Node("end")
 
-      n1 --> n2 costs = 2
-      n1 --> n3 costs = 1
-      n2 --> n4 costs = 1
-      n3 --> n4 costs = 3
-      n2 --> n5 costs = 1
-      n4 --> n6 costs = 1
-      n5 --> n6 costs = 3
+      n1 --> n2 weigth = 2
+      n1 --> n3 weigth = 1
+      n2 --> n4 weigth = 1
+      n3 --> n4 weigth = 3
+      n2 --> n5 weigth = 1
+      n4 --> n6 weigth = 1
+      n5 --> n6 weigth = 3
 
       graph0.removeLink(n2.uuid, n3.uuid)
 
@@ -238,13 +237,13 @@ class DirectedGraphSpec extends WordSpec with GivenWhenThen {
       val n5 = graph0.Node("n5")
       val n6 = graph0.Node("end")
 
-      n1 --> n2 costs = 2
-      n1 --> n3 costs = 1
-      n2 --> n4 costs = 1
-      n3 --> n4 costs = 3
-      n2 --> n5 costs = 1
-      n4 --> n6 costs = 1
-      n5 --> n6 costs = 3
+      n1 --> n2 weigth = 2
+      n1 --> n3 weigth = 1
+      n2 --> n4 weigth = 1
+      n3 --> n4 weigth = 3
+      n2 --> n5 weigth = 1
+      n4 --> n6 weigth = 1
+      n5 --> n6 weigth = 3
 
       graph0.removeLink(n4.uuid, n2.uuid)
 

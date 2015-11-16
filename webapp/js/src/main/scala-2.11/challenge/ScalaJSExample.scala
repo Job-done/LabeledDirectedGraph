@@ -11,7 +11,6 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.{Failure, Success}
 
-
 object Client extends autowire.Client[Js.Value, Reader, Writer] {
 
   override def doCall(req: Request): Future[Js.Value] = dom.ext.Ajax.post(
@@ -24,7 +23,6 @@ object Client extends autowire.Client[Js.Value, Reader, Writer] {
 
   def write[Result: Writer](r: Result) = writeJs(r)
 }
-
 
 @JSExport
 object ScalaJSExample {
@@ -49,14 +47,13 @@ object ScalaJSExample {
   def linkCreated(pSource: js.Dynamic, pTarget: js.Dynamic, pLeft: Boolean, pRight: Boolean) = {
     println(s"${pSource.uuid} ,${pTarget.uuid}")
     val a = Client[Api].linkCreate(pSource.uuid.toString, pTarget.uuid.toString).call().onComplete {
-      case Success(value) => {
+      case Success(value) =>
         println(s"Send       :  ${pSource.uuid.toString},${pTarget.uuid.toString}")
         println(s"server says: $value")
-        // links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
+      // links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
 
-        // TODO  restart()
-      }
-      case Failure(e) => e.printStackTrace
+      // TODO  restart()
+      case Failure(e) => e.printStackTrace()
     }
   }
 
@@ -66,38 +63,31 @@ object ScalaJSExample {
     lastNodeId += 1
 
     Client[Api].nodeCreate(lastNodeId.toString).call().onComplete {
-      case Success(value) => {
+      case Success(value) =>
         nodes += js.Dynamic.literal(id = lastNodeId, reflexive = false, x = x0, y = y0, uuid = value.toString)
 
-        // TODO  restart()
-      }
-      case Failure(e) => e.printStackTrace
+      // TODO  restart()
+      case Failure(e) => e.printStackTrace()
     }
-
   }
 
   @JSExport
   def nodeDeleted(uuid: String) = {
     Client[Api].nodeDelete(uuid).call().onComplete {
-      case Success(value) => {
+      case Success(value) =>
 
-        // TODO  restart()
-      }
-      case Failure(e) => e.printStackTrace
+      // TODO  restart()
+      case Failure(e) => e.printStackTrace()
     }
-
   }
 
   @JSExport
   def linkDeleted(uuid1: String, uuid2: String) = {
     Client[Api].linkDelete(uuid1, uuid2).call().onComplete {
-      case Success(value) => {
+      case Success(value) =>
         println("Link deleted")
-        // TODO  restart()
-      }
-      case Failure(e) => e.printStackTrace
+      // TODO  restart()
+      case Failure(e) => e.printStackTrace()
     }
   }
-
-
 }

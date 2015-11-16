@@ -58,22 +58,23 @@ abstract class DirectedGraph() extends Graph {
   }
 
   protected def newEdge(from: Vertex, to: Vertex): Edge
-
 }
 
-
 trait DataExt {
-  var costs = Double.PositiveInfinity
+  var weigth = Double.PositiveInfinity
 }
 
 /**
- * Final implementation as a trait
+ * Final implementation
+ * Based on a store Map[Vertex, NodeAttribs]
+ * where in NodeAtribs label, set of destinations and a set of origins.
+ * Origins are used to backtrack Node e.g. for deletion
  */
 class LabeledDirectedGraphImpl extends DirectedGraph {
   type Vertex = Node
   type Edge = LinkX
 
-  case class Node(val uuid: UUID) extends VertexImpl {
+  case class Node(uuid: UUID) extends VertexImpl {
     override def connectWith(node: Vertex): Edge = super.connectWith(node)
 
     def -->(n2: Vertex): Edge = connectWith(n2)
@@ -81,11 +82,13 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
     override def toString = graphStore.getOrElse(this, NodeAttribs("nix", Set(), Set())).label
   }
 
-  // Companion object Node
+  /**
+    *  Companion object Node
+    *  Apply methode creates a named or unnamed Node
+    */
   object Node {
-
     // Creation of a named node and maintaining label uniqueness
-    def apply(label: String) = {
+    def apply(label: String) = { // Called by Server.nodeCreate
       def mkUnqLabel(lbl: String): String = {
         @tailrec
         def mkUnqInner(lbl: String, count: Int): String = {
@@ -106,17 +109,17 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
 
   // Link with an extension
   class LinkX(from: Node, to: Node) extends /*EdgeImpl(from, to) with */ DataExt {
-    // override def toString = from.toString + " --> " + to.toString + " w:" + costs
+    // override def toString = from.toString + " --> " + to.toString + " w:" + weigth
   }
 
   override def toString = graphStore.toString()
 
-  // TODO remove elements
-  def removeLink(arrowTail: UUID, arrowHead: UUID) = {
+  /**
+   * Delete a link
+   */
+   def removeLink(arrowTail: UUID, arrowHead: UUID) = { // Called by Server.linkDelete
     val (head, tail) = (Node(arrowTail), Node(arrowHead))
     removeStartingEnds(head, tail)
-//    removeEndingEnds(head, tail)
-//    removeStartingEnds(tail, head)
     removeEndingEnds(tail, head)
   }
 
@@ -134,7 +137,10 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
       graphStore(nod).backward = graphStore(nod).backward - node2removed
   }
 
-  def removeNode(uuid: UUID) = {
+  /**
+   * Delete a Node
+   */
+  def removeNode(uuid: UUID) = { // Called by nodeDelete
     val node2remove = new Node(uuid)
     val nodeAttr = graphStore.remove(node2remove)
     if (nodeAttr.isDefined) {
@@ -145,7 +151,10 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
 
   }
 
-  def createLink(start: String, stop: String): (UUID, UUID) = {
+  /**
+   * Creation of a link
+   */
+  def createLink(start: String, stop: String): (UUID, UUID) = { // Called Server.linkCreate
     lazy val uuid0 = UUID.fromString("0")
     val uuid1= UUID.fromString(start)
     val uuid2= UUID.fromString(stop)
