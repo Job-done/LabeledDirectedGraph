@@ -1,5 +1,7 @@
 package challenge
 
+import java.util.UUID
+
 import autowire._
 import org.scalajs.dom
 import upickle.Js
@@ -33,47 +35,60 @@ object ScalaJSExample {
 
 
   @JSExport
-  val nodes = js.Array[js.Dynamic](
-  js.Dynamic.literal(id= 0, reflexive= false, uuid =  "0"),
-  js.Dynamic.literal(id= 1, reflexive= true, uuid =  "1" ))
+  val (nodes, links) = (js.Array[js.Dynamic](), js.Array[js.Dynamic]())
 
   @JSExport
-  val links = /*new js.Array[js.Dynamic] */
-    js.Array(
-      js.Dynamic.literal(source = nodes(0), target = nodes(1), left = false, right = true /*, weight = 0*/))
-  @JSExport
-  var lastNodeId = 1
+  def GraphSetUp() = {
+    def updateOrCreate(nod: (UUID, String, Set[UUID])) = {
 
-  @JSExport
-  def GraphSetUp() ={
+      val finding = nodes.find(_.uuid == nod._1.toString)
+
+      if (finding.isDefined) {
+        val index = nodes.indexOf(finding.get)
+        if (nod._2 != "") nodes(index).id = nod._2 // (Re-)set id
+        nodes(index)
+      } else {
+        val newNode = js.Dynamic.literal(id = nod._2, reflexive = false, uuid = nod._1.toString)
+        nodes += newNode
+        newNode
+      }
+    }
+
+    Client[Api].readGraph().call().onComplete {
+      case Success(value) =>
+        value.foreach(nod => {
+          val newSource = updateOrCreate(nod)
+
+          nod._3.foreach(linkedNode => {
+            val target = updateOrCreate((linkedNode, "", Set()))
+            links += js.Dynamic.literal(source = newSource, target = target, left = true, right = false)
+          }
+          )
+        }
+        )
+        js.Dynamic.global.restart()
+      case Failure(e) => e.printStackTrace()
+    }
 
   }
 
-
   @JSExport
   def linkCreated(pSource: js.Dynamic, pTarget: js.Dynamic, pLeft: Boolean, pRight: Boolean) = {
-    println(s"${pSource.uuid} ,${pTarget.uuid}")
-    val a = Client[Api].linkCreate(pSource.uuid.toString, pTarget.uuid.toString).call().onComplete {
+    Client[Api].linkCreate(pSource.uuid.toString, pTarget.uuid.toString).call().onComplete {
       case Success(value) =>
-        println(s"Send       :  ${pSource.uuid.toString},${pTarget.uuid.toString}")
-        println(s"server says: $value")
-      // links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
-
-      // TODO  restart()
+        links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
+        js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }
   }
 
-
   @JSExport
   def nodeCreated(x0: Double, y0: Double) = {
-    lastNodeId += 1
 
-    Client[Api].nodeCreate(lastNodeId.toString).call().onComplete {
+    Client[Api].nodeCreate("").call().onComplete {
       case Success(value) =>
-        nodes += js.Dynamic.literal(id = lastNodeId, reflexive = false, x = x0, y = y0, uuid = value.toString)
-
-      // TODO  restart()
+        nodes += js.Dynamic.literal(id = value._2, reflexive = false, x = x0, y = y0, uuid = value._1.toString)
+        js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }
   }
@@ -81,9 +96,7 @@ object ScalaJSExample {
   @JSExport
   def nodeDeleted(uuid: String) = {
     Client[Api].nodeDelete(uuid).call().onComplete {
-      case Success(value) =>
-
-      // TODO  restart()
+      case Success(value) => // Will be processed in global app.js
       case Failure(e) => e.printStackTrace()
     }
   }
@@ -91,9 +104,7 @@ object ScalaJSExample {
   @JSExport
   def linkDeleted(uuid1: String, uuid2: String) = {
     Client[Api].linkDelete(uuid1, uuid2).call().onComplete {
-      case Success(value) =>
-        println("Link deleted")
-      // TODO  restart()
+      case Success(value) => // Will be processed in global app.js
       case Failure(e) => e.printStackTrace()
     }
   }

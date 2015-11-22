@@ -1,3 +1,5 @@
+"use strict";
+
 // set up SVG for D3
 var width = 1358,
     height = 748,
@@ -87,14 +89,14 @@ function tick() {
 }
 
 // update graph (called when needed)
-function refresh() {
+function restart() {
     // path (link) group
     path = path.data(challenge.ScalaJSExample().links);
 
     // update existing links
     path.classed('selected', function (d) {
-        return d === selected_link;
-    })
+            return d === selected_link;
+        })
         .style('marker-start', function (d) {
             return d.left ? 'url(#start-arrow)' : '';
         })
@@ -116,14 +118,20 @@ function refresh() {
             return d.right ? 'url(#end-arrow)' : '';
         })
         .on('mousedown', function (d) {
-            if (d3.event.ctrlKey) return;
+            if (d3.event.ctrlKey) {
+                return;
+            }
 
             // select link
             mousedown_link = d;
-            if (mousedown_link === selected_link) selected_link = null;
-            else selected_link = mousedown_link;
+            if (mousedown_link === selected_link) {
+                selected_link = null;
+            }
+            else {
+                selected_link = mousedown_link;
+            }
             selected_node = null;
-            refresh();
+            restart();
         });
 
     // remove old links
@@ -161,22 +169,32 @@ function refresh() {
             return d.reflexive;
         })
         .on('mouseover', function (d) {
-            if (!mousedown_node || d === mousedown_node) return;
+            if (!mousedown_node || d === mousedown_node) {
+                return;
+            }
             // enlarge target node
             d3.select(this).attr('transform', 'scale(1.1)');
         })
         .on('mouseout', function (d) {
-            if (!mousedown_node || d === mousedown_node) return;
+            if (!mousedown_node || d === mousedown_node) {
+                return;
+            }
             // unenlarge target node
             d3.select(this).attr('transform', '');
         })
         .on('mousedown', function (d) {
-            if (d3.event.ctrlKey) return;
+            if (d3.event.ctrlKey) {
+                return;
+            }
 
             // select node
             mousedown_node = d;
-            if (mousedown_node === selected_node) selected_node = null;
-            else selected_node = mousedown_node;
+            if (mousedown_node === selected_node) {
+                selected_node = null;
+            }
+            else {
+                selected_node = mousedown_node;
+            }
             selected_link = null;
 
             // reposition drag line
@@ -185,10 +203,12 @@ function refresh() {
                 .classed('hidden', false)
                 .attr('d', 'M' + mousedown_node.x + ',' + mousedown_node.y + 'L' + mousedown_node.x + ',' + mousedown_node.y);
 
-            refresh();
+            restart();
         })
         .on('mouseup', function (d) {
-            if (!mousedown_node) return;
+            if (!mousedown_node) {
+                return;
+            }
 
             // needed by FF
             drag_line
@@ -220,7 +240,7 @@ function refresh() {
 
             // Link create
             var link;
-            link = challenge.ScalaJSExample().links.filter(function(l) {
+            link = challenge.ScalaJSExample().links.filter(function (l) {
                 return (l.source === source && l.target === target);
             })[0];
 
@@ -229,14 +249,14 @@ function refresh() {
             } else {
                 link = {source: source, target: target, left: false, right: false};
                 link[direction] = true;
-                challenge.ScalaJSExample().linkCreated(  source, target, false, false);
-                challenge.ScalaJSExample().links.push(link);
+                challenge.ScalaJSExample().linkCreated(source, target, link.left, link.right);
+                // challenge.ScalaJSExample().links.push(link);
             }
 
             // select new link
             selected_link = link;
             selected_node = null;
-            refresh();
+            restart();
         });
 
     // show node IDs
@@ -262,27 +282,31 @@ function mousedown() {
     // because :active only works in WebKit?
     svg.classed('active', true);
 
-    if (d3.event.ctrlKey || mousedown_node || mousedown_link) return;
+    if (d3.event.ctrlKey || mousedown_node || mousedown_link) {
+        return;
+    }
 
     // insert new node at point
     var point = d3.mouse(this)/*,
-    node = {id: ++challenge.ScalaJSExample().lastNodeId, reflexive: false};
-    node.x = point[0];
-    node.y = point[1];
+     node = {id: ++challenge.ScalaJSExample().lastNodeId, reflexive: false};
+     node.x = point[0];
+     node.y = point[1];
      challenge.ScalaJSExample().nodes.push(node)*/;
 
-    var result = challenge.ScalaJSExample().nodeCreated(point[0], point[1]);
+    challenge.ScalaJSExample().nodeCreated(point[0], point[1]);
 
-    refresh();
+    // restart();
 }
 
 function mousemove() {
-    if (!mousedown_node) return;
+    if (!mousedown_node) {
+        return;
+    }
 
     // update drag line
     drag_line.attr('d', 'M' + mousedown_node.x + ',' + mousedown_node.y + 'L' + d3.mouse(this)[0] + ',' + d3.mouse(this)[1]);
 
-    refresh();
+    restart();
 }
 
 function mouseup() {
@@ -315,7 +339,9 @@ var lastKeyDown = -1;
 function keydown() {
     d3.event.preventDefault();
 
-    if (lastKeyDown !== -1) return;
+    if (lastKeyDown !== -1) {
+        return;
+    }
     lastKeyDown = d3.event.keyCode;
 
     // ctrl
@@ -324,42 +350,41 @@ function keydown() {
         svg.classed('ctrl', true);
     }
 
-    if (!selected_node && !selected_link) return;
+    if (!selected_node && !selected_link) {
+        return;
+    }
     switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: // delete
             if (selected_node) {
-                challenge.ScalaJSExample().nodeDeleted(selected_node.uuid)
+                challenge.ScalaJSExample().nodeDeleted(selected_node.uuid);
                 challenge.ScalaJSExample().nodes.splice(challenge.ScalaJSExample().nodes.indexOf(selected_node), 1);
                 spliceLinksForNode(selected_node);
-
-
             } else if (selected_link) {
                 challenge.ScalaJSExample().linkDeleted(selected_link.source.uuid, selected_link.target.uuid);
                 challenge.ScalaJSExample().links.splice(challenge.ScalaJSExample().links.indexOf(selected_link), 1);
             }
             selected_link = null;
-            selected_link = null;
             selected_node = null;
-            refresh();
+            restart();
             break;
-            /*
-             case 66: // B
-             if(selected_link) {
-             // set link direction to both left and right
-             selected_link.left = true;
-             selected_link.right = true;
-             }
-             */
-            refresh();
-            break;
+        /*
+         case 66: // B
+         if(selected_link) {
+         // set link direction to both left and right
+         selected_link.left = true;
+         selected_link.right = true;
+         }
+         restart();
+         break;
+         */
         case 76: // L
             if (selected_link) {
                 // set link direction to left only
                 selected_link.left = true;
                 selected_link.right = false;
             }
-            refresh();
+            restart();
             break;
         case 82: // R
             if (selected_node) {
@@ -370,7 +395,7 @@ function keydown() {
                 selected_link.left = false;
                 selected_link.right = true;
             }
-            refresh();
+            restart();
             break;
     }
 }
@@ -388,11 +413,11 @@ function keyup() {
 }
 
 // app starts here
-challenge.ScalaJSExample().GraphSetUp()
+challenge.ScalaJSExample().GraphSetUp();
 svg.on('mousedown', mousedown)
     .on('mousemove', mousemove)
     .on('mouseup', mouseup);
 d3.select(window)
     .on('keydown', keydown)
     .on('keyup', keyup);
-refresh();
+restart();

@@ -7,9 +7,9 @@ import scala.collection.mutable
 import scala.language.postfixOps
 
 /**
- * Abstraction of a normal graph with its vertexes and edges.
- * At the concrete level these are named nodes and links.
- */
+  * Abstraction of a normal graph with its vertexes and edges.
+  * At the concrete level these are named nodes and links.
+  */
 abstract class Graph() {
   type Edge
   type Vertex <: VertexIntf
@@ -22,8 +22,8 @@ abstract class Graph() {
 }
 
 /**
- * Partial implementation and Specialization of the graph with directed lines
- */
+  * Partial implementation and Specialization of the graph with directed lines
+  */
 abstract class DirectedGraph() extends Graph {
   // Store for the whole graph inclusive the edges included in the `NodeAttribs` class
   val graphStore = mutable.Map[Vertex, NodeAttribs]()
@@ -65,11 +65,11 @@ trait DataExt {
 }
 
 /**
- * Final implementation
- * Based on a store Map[Vertex, NodeAttribs]
- * where in NodeAtribs label, set of destinations and a set of origins.
- * Origins are used to backtrack Node e.g. for deletion
- */
+  * Final implementation
+  * Based on a store Map[Vertex, NodeAttribs]
+  * where in NodeAtribs label, set of destinations and a set of origins.
+  * Origins are used to backtrack Node e.g. for deletion
+  */
 class LabeledDirectedGraphImpl extends DirectedGraph {
   type Vertex = Node
   type Edge = LinkX
@@ -83,9 +83,9 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   }
 
   /**
-   * Companion object Node
-   * Apply methode creates a named or unnamed Node
-   */
+    * Companion object Node
+    * Apply methode creates a named or unnamed Node
+    */
   object Node {
     // Creation of a named node and maintaining label uniqueness
     def apply(label: String) = {
@@ -130,8 +130,8 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   }
 
   /**
-   * Delete a link
-   */
+    * Delete a link
+    */
   def removeLink(arrowTail: UUID, arrowHead: UUID) = {
     // Called by Server.linkDelete
     val (head, tail) = (Node(arrowTail), Node(arrowHead))
@@ -140,8 +140,8 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   }
 
   /**
-   * Delete a Node
-   */
+    * Delete a Node
+    */
   def removeNode(uuid: UUID) = {
     // Called by nodeDelete
     val node2remove = new Node(uuid)
@@ -155,8 +155,8 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   }
 
   /**
-   * Creation of a link
-   */
+    * Creation of a link
+    */
   def createLink(start: String, stop: String): (UUID, UUID) = {
     // Called Server.linkCreate
     lazy val uuid0 = UUID.fromString("0")
@@ -167,14 +167,12 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
     (uuid1, uuid2)
   }
 
-/*
-  def readGraph = {
+  def readGraph(): Iterable[(UUID, String, Set[UUID])] = {
     for (key <- graphStore.keys;
-    val elem = graphStore(key)) yield
-
-    (key, graphStore)
+         value = graphStore(key)
+    )
+      yield (key.uuid, value.label, value.forward.map { nod => (nod.endNode.uuid)})
   }
-*/
 
   protected def newEdge(from: Node, to: Node) = new LinkX(from, to)
 }

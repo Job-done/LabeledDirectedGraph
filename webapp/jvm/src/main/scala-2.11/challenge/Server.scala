@@ -65,10 +65,10 @@ object Server extends SimpleRoutingApp with Api {
             extract(_.request.entity.asString) { e =>
               complete {
                 AutowireServer.route[Api](Server)(
-                autowire.Core.Request(s,
-                  upickle.json.read(e).asInstanceOf[Js.Obj].value.toMap
-                )
-              ).map(upickle.json.write)
+                  autowire.Core.Request(s,
+                    upickle.json.read(e).asInstanceOf[Js.Obj].value.toMap
+                  )
+                ).map(upickle.json.write)
               }
             }
           }
@@ -76,26 +76,34 @@ object Server extends SimpleRoutingApp with Api {
     }
   }
 
-  def nodeCreate(id: String): UUID = {
-    val ret = graph.Node(id).uuid
-    println("Server: Node created" + graph)
-    ret
+  var lastNodeNr = 0
+
+  def nodeCreate(id: String): (UUID, String) = {
+    val ids = if (id == "") {
+      lastNodeNr += 1; lastNodeNr.toString
+    } else id
+    val ret = graph.Node(ids).uuid
+//    println("Server: Node created " + graph.readGraph)
+    (ret, ids)
   }
 
   def nodeDelete(uuid: String): Unit = {
     graph.removeNode(UUID.fromString(uuid))
-    println("Server: Node deleted" + graph)
+    println("Server: Node deleted" + graph.readGraph)
   }
 
   def linkCreate(start: String, stop: String): (UUID, UUID) = {
-    val ret =graph.createLink(start, stop)
-    println("Server: Link created " + graph)
+    val ret = graph.createLink(start, stop)
+    println("Server: Link created " + graph.readGraph)
     ret
   }
 
   def linkDelete(uuid1: String, uuid2: String) = {
     graph.removeLink(UUID.fromString(uuid1), UUID.fromString(uuid2))
-    println("Server: Link deleted " + graph)
+    println("Server: Link deleted " + graph.readGraph)
   }
 
+  def readGraph() = {
+    graph.readGraph()
+  }
 }
