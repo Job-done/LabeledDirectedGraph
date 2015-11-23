@@ -32,7 +32,6 @@ object Template {
         ),
         body(margin := 0)(
           script(`type` := "text/javascript", src := "app.js")
-          /*script("challenge.ScalaJSExample().main()")*/
         )
       )
 }
@@ -43,7 +42,7 @@ object AutowireServer extends autowire.Server[Js.Value, Reader, Writer] {
   def write[Result: Writer](r: Result) = upickle.default.writeJs(r)
 }
 
-object Server extends SimpleRoutingApp with Api {
+object HttpServer extends SimpleRoutingApp with Api {
   val graph = new LabeledDirectedGraphImpl
 
   def main(args: Array[String]): Unit = {
@@ -64,7 +63,7 @@ object Server extends SimpleRoutingApp with Api {
           path("api" / Segments) { s =>
             extract(_.request.entity.asString) { e =>
               complete {
-                AutowireServer.route[Api](Server)(
+                AutowireServer.route[Api](HttpServer)(
                   autowire.Core.Request(s,
                     upickle.json.read(e).asInstanceOf[Js.Obj].value.toMap
                   )
@@ -83,27 +82,25 @@ object Server extends SimpleRoutingApp with Api {
       lastNodeNr += 1; lastNodeNr.toString
     } else id
     val ret = graph.Node(ids).uuid
-//    println("Server: Node created " + graph.readGraph)
+    println("HttpServer: Node created " + graph)
     (ret, ids)
   }
 
   def nodeDelete(uuid: String): Unit = {
     graph.removeNode(UUID.fromString(uuid))
-    println("Server: Node deleted" + graph.readGraph)
+    println("HttpServer: Node deleted " + graph)
   }
 
   def linkCreate(start: String, stop: String): (UUID, UUID) = {
     val ret = graph.createLink(start, stop)
-    println("Server: Link created " + graph.readGraph)
+    println("HttpServer: Link created " + graph)
     ret
   }
 
   def linkDelete(uuid1: String, uuid2: String) = {
     graph.removeLink(UUID.fromString(uuid1), UUID.fromString(uuid2))
-    println("Server: Link deleted " + graph.readGraph)
+    println("HttpServer: Link deleted " + graph)
   }
 
-  def readGraph() = {
-    graph.readGraph()
-  }
+  def readGraph() = graph.readGraph()
 }

@@ -89,7 +89,7 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   object Node {
     // Creation of a named node and maintaining label uniqueness
     def apply(label: String) = {
-      // Called by Server.nodeCreate
+      // Called by HttpServer.nodeCreate
       def mkUnqLabel(lbl: String): String = {
         @tailrec
         def mkUnqInner(lbl: String, count: Int): String = {
@@ -133,7 +133,7 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
     * Delete a link
     */
   def removeLink(arrowTail: UUID, arrowHead: UUID) = {
-    // Called by Server.linkDelete
+    // Called by HttpServer.linkDelete
     val (head, tail) = (Node(arrowTail), Node(arrowHead))
     removeStartingEnds(head, tail)
     removeEndingEnds(tail, head)
@@ -158,7 +158,7 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
     * Creation of a link
     */
   def createLink(start: String, stop: String): (UUID, UUID) = {
-    // Called Server.linkCreate
+    // Called HttpServer.linkCreate
     lazy val uuid0 = UUID.fromString("0")
     val uuid1 = UUID.fromString(start)
     val uuid2 = UUID.fromString(stop)
