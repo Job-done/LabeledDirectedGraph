@@ -7,6 +7,7 @@ import org.scalajs.dom
 import upickle.Js
 import upickle.default._
 
+import scala.collection.mutable
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
@@ -39,7 +40,7 @@ object ScalaJSExample {
 
   @JSExport
   def GraphSetUp() = {
-    def updateOrCreate(nod: (UUID, String, Set[UUID])) = {
+    def updateOrCreate(nod: (UUID, String, mutable.Set[UUID])) = {
 
       val finding = nodes.find(_.uuid == nod._1.toString)
 
@@ -60,12 +61,10 @@ object ScalaJSExample {
           val newSource = updateOrCreate(nod)
 
           nod._3.foreach(linkedNode => {
-            val target = updateOrCreate((linkedNode, "", Set()))
+            val target = updateOrCreate((linkedNode, "", mutable.Set()))
             links += js.Dynamic.literal(source = newSource, target = target, left = true, right = false)
-          }
-          )
-        }
-        )
+          })
+        })
         js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }

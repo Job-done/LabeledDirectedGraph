@@ -34,15 +34,15 @@ abstract class DirectedGraph() extends Graph {
   case class EdgeArrow(endNode: Vertex /*, EdgeAttribs*/)
 
   // The sole label of vertex/node with its referencing vertexes AND starting edges/links
-  case class NodeAttribs(label: String, var forward: Set[EdgeArrow], var backward: Set[Vertex])
+  case class NodeAttribs(label: String, forward: mutable.Set[EdgeArrow], backward: mutable.Set[Vertex])
 
   class VertexImpl extends VertexIntf {
     self: Vertex =>
 
     def connectWith(node: Vertex): Edge = {
       val edge = newEdge(self, node)
-      val tempAttribsEnd = graphStore.getOrElseUpdate(self, NodeAttribs("", Set(), Set()))
-      val tempAttribsStart = graphStore.getOrElseUpdate(node, NodeAttribs("", Set(), Set()))
+      val tempAttribsEnd = graphStore.getOrElseUpdate(self, NodeAttribs("", mutable.Set(), mutable.Set()))
+      val tempAttribsStart = graphStore.getOrElseUpdate(node, NodeAttribs("", mutable.Set(), mutable.Set()))
 
       // Make a updated set of originated vertexes and destinated ones, and the other way around.
       graphStore(self) = NodeAttribs(tempAttribsEnd.label,
@@ -79,7 +79,7 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
 
     def -->(n2: Vertex): Edge = connectWith(n2)
 
-    override def toString = graphStore.getOrElse(this, NodeAttribs("nix", Set(), Set())).label
+    override def toString = graphStore.getOrElse(this, NodeAttribs("nix", mutable.Set(), mutable.Set())).label
   }
 
   /**
@@ -101,7 +101,7 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
 
       val node = new Node(UUID.randomUUID())
       val lbl = mkUnqLabel(label)
-      graphStore(node) = NodeAttribs(lbl, Set(), Set())
+      graphStore(node) = NodeAttribs(lbl, mutable.Set(), mutable.Set())
       // Update the list for unique labels
       if (lbl != "") uniqueLabels(lbl) = node
       node
@@ -116,18 +116,12 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
   override def toString = graphStore.toString()
 
   // Remove the node from the connected node list
-  def removeStartingEnds(nod: Node, node2removed: Node) = {
-    if (graphStore.contains(nod)) {
-      val set = graphStore(nod).forward - new EdgeArrow(node2removed)
-      graphStore(nod).forward = set
-    }
-  }
+  def removeStartingEnds(nod: Node, node2removed: Node) =
+    if (graphStore.contains(nod)) graphStore(nod).forward.remove(new EdgeArrow(node2removed))
 
   // Remove the node from the connected node list
-  def removeEndingEnds(nod: Node, node2removed: Node) = {
-    if (graphStore.contains(nod))
-      graphStore(nod).backward = graphStore(nod).backward - node2removed
-  }
+  def removeEndingEnds(nod: Node, node2removed: Node) =
+    if (graphStore.contains(nod)) graphStore(nod).backward.remove(node2removed)
 
   /**
     * Delete a link
@@ -159,19 +153,16 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
     */
   def createLink(start: String, stop: String): (UUID, UUID) = {
     // Called HttpServer.linkCreate
-    lazy val uuid0 = UUID.fromString("0")
-    val uuid1 = UUID.fromString(start)
-    val uuid2 = UUID.fromString(stop)
-
-    Node(uuid1) --> Node(uuid2)
-    (uuid1, uuid2)
+    val link = (UUID.fromString(start), UUID.fromString(stop))
+    Node(link._1) --> Node(link._2)
+    link
   }
 
-  def readGraph(): Iterable[(UUID, String, Set[UUID])] = {
+  def readGraph(): Iterable[(UUID, String, mutable.Set[UUID])] = {
     for (key <- graphStore.keys;
          value = graphStore(key)
     )
-      yield (key.uuid, value.label, value.forward.map { nod => (nod.endNode.uuid)})
+      yield (key.uuid, value.label, value.forward.map { nod => nod.endNode.uuid })
   }
 
   protected def newEdge(from: Node, to: Node) = new LinkX(from, to)
