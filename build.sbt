@@ -1,14 +1,17 @@
 // Turn this project into a Scala.js project by importing these settings
 
+val scalaV = "2.11.7"
+scalaVersion := scalaV
+
 val webapp = crossProject.settings(
-  scalaVersion := "2.11.7",
+  scalaVersion := scalaV,
   version := "0.1-SNAPSHOT",
   scalacOptions ++= Seq("-feature"),
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest" % "0.3.1",
-    "com.lihaoyi" %%% "upickle" % "0.3.6",
     "com.lihaoyi" %%% "autowire" % "0.2.5",
-    "com.lihaoyi" %%% "scalatags" % "0.5.3"
+    "com.lihaoyi" %%% "scalatags" % "0.5.3",
+    "com.lihaoyi" %%% "upickle" % "0.3.6",
+    "com.lihaoyi" %%% "utest" % "0.3.1"
   ), testFrameworks += new TestFramework("utest.runner.Framework")
 ).jsSettings(
   workbenchSettings: _*
@@ -23,13 +26,11 @@ val webapp = crossProject.settings(
 ).jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-actor" % "2.4.1",
     "io.spray" %% "spray-can" % "1.3.3",
     "io.spray" %% "spray-routing" % "1.3.3",
-    "com.typesafe.akka" %% "akka-actor" % "2.4.0",
-    //    "org.webjars" % "bootstrap" % "3.3.4",
     "com.esotericsoftware.kryo" % "kryo" % "2.24.0" % "test",
-    "org.scalatest" % "scalatest_2.11" % "2.2.5" % "test"
-  )
+    "org.scalatest" % "scalatest_2.11" % "2.2.5" % "test")
 )
 
 val webappJS = webapp.js

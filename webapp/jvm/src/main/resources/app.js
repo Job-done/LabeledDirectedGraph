@@ -228,7 +228,7 @@ function restart() {
             // add link to graph (update if exists)
             // NB: links are strictly source < target; arrows separately specified by booleans
             var source, target, direction;
-            if (mousedown_node.id < mouseup_node.id) {
+            if (true /*mousedown_node.id < mouseup_node.id*/) {
                 source = mousedown_node;
                 target = mouseup_node;
                 direction = 'right';

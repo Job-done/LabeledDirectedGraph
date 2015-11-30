@@ -21,18 +21,12 @@ object Template {
         head(
           meta(httpEquiv := "Content-Type", content := "text/html; charset=UTF-8"),
           title("Labeled Directed Graph Challenge"),
-          script(`type` := "text/javascript", src := "/client-fastopt.js"),
-          //          script(`type` := "text/javascript", src := "//localhost:12345/workbench.js"),
-          script(`type` := "text/javascript", src := "http://d3js.org/d3.v3.min.js"),
-          link(
-            rel := "stylesheet",
-            `type` := "text/css",
-            href := "app.css"
-          )
+          script(src := "/client-fastopt.js"),
+          // script(src := "//localhost:12345/workbench.js"),
+          script(src := "//d3js.org/d3.v3.min.js", charset := "utf-8"),
+          link(rel := "stylesheet", `type` := "text/css", href := "app.css")
         ),
-        body(margin := 0)(
-          script(`type` := "text/javascript", src := "app.js")
-        )
+        body(margin := 0)(script( src := "app.js"))
       )
 }
 
@@ -64,9 +58,7 @@ object HttpServer extends SimpleRoutingApp with Api {
             extract(_.request.entity.asString) { e =>
               complete {
                 AutowireServer.route[Api](HttpServer)(
-                  autowire.Core.Request(s,
-                    upickle.json.read(e).asInstanceOf[Js.Obj].value.toMap
-                  )
+                  autowire.Core.Request(s, upickle.json.read(e).asInstanceOf[Js.Obj].value.toMap)
                 ).map(upickle.json.write)
               }
             }
@@ -79,7 +71,8 @@ object HttpServer extends SimpleRoutingApp with Api {
 
   def nodeCreate(id: String): (UUID, String) = {
     val ids = if (id == "") {
-      lastNodeNr += 1; lastNodeNr.toString
+      lastNodeNr += 1
+      lastNodeNr.toString
     } else id
     val ret = graph.Node(ids).uuid
     println("HttpServer: Node created " + graph)

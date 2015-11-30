@@ -153,9 +153,9 @@ class LabeledDirectedGraphImpl extends DirectedGraph {
     */
   def createLink(start: String, stop: String): (UUID, UUID) = {
     // Called HttpServer.linkCreate
-    val link = (UUID.fromString(start), UUID.fromString(stop))
-    Node(link._1) --> Node(link._2)
-    link
+    val (from, to) = (UUID.fromString(start), UUID.fromString(stop))
+    Node(from) --> Node(to)
+    (from, to)
   }
 
   def readGraph(): Iterable[(UUID, String, mutable.Set[UUID])] = {

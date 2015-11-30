@@ -38,33 +38,43 @@ object ScalaJSExample {
   @JSExport
   val (nodes, links) = (js.Array[js.Dynamic](), js.Array[js.Dynamic]())
 
+  def addLink(pSource: js.Dynamic, pTarget: js.Dynamic) = {
+    links += js.Dynamic.literal(source = pSource, target = pTarget, left = false, right = true)
+  }
+
+  /**
+    * Conditional update or creation of a node
+    *
+    * If refering to a existing node try to update with its name
+    * A name could be present or absent
+    * If the node doesn't exist than create it
+    */
   @JSExport
   def GraphSetUp() = {
-    def updateOrCreate(nod: (UUID, String, mutable.Set[UUID])) = {
+    def updateOrCreate(uuid: String, name: String) = {
 
-      val finding = nodes.find(_.uuid == nod._1.toString)
+      val finding = nodes.find(_.uuid == uuid)
 
       if (finding.isDefined) {
         val index = nodes.indexOf(finding.get)
-        if (nod._2 != "") nodes(index).id = nod._2 // (Re-)set id
+        if (name != "") nodes(index).id = name // (Re-)set id
         nodes(index)
       } else {
-        val newNode = js.Dynamic.literal(id = nod._2, reflexive = false, uuid = nod._1.toString)
+        val newNode = js.Dynamic.literal(id = name, reflexive = false, uuid = uuid)
         nodes += newNode
         newNode
       }
+
     }
 
     Client[Api].readGraph().call().onComplete {
       case Success(value) =>
-        value.foreach(nod => {
-          val newSource = updateOrCreate(nod)
+        value.foreach { case (uuid: UUID, name: String, links: mutable.Set[UUID]) =>
+          val newSource = updateOrCreate(uuid.toString, name)
 
-          nod._3.foreach(linkedNode => {
-            val target = updateOrCreate((linkedNode, "", mutable.Set()))
-            links += js.Dynamic.literal(source = newSource, target = target, left = true, right = false)
-          })
-        })
+          // Before adding a link a conditional update or create is called
+          links.foreach(linkedNode => addLink(newSource, updateOrCreate(linkedNode.toString, "")))
+        }
         js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }
@@ -75,7 +85,7 @@ object ScalaJSExample {
   def linkCreated(pSource: js.Dynamic, pTarget: js.Dynamic, pLeft: Boolean, pRight: Boolean) = {
     Client[Api].linkCreate(pSource.uuid.toString, pTarget.uuid.toString).call().onComplete {
       case Success(value) =>
-        links += js.Dynamic.literal(source = pSource, target = pTarget, left = pLeft, right = pRight)
+        links += js.Dynamic.literal(source = pSource, target = pTarget, left = false, right = true)
         js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }
