@@ -1,6 +1,7 @@
 package challenge
 
 import scala.concurrent.Future
+import scala.language.higherKinds
 
 /**
   * A generic client-server implementation, which does everything locally but

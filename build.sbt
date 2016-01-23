@@ -29,8 +29,13 @@ val webapp = crossProject.settings(
     "com.typesafe.akka" %% "akka-actor" % "2.4.1",
     "io.spray" %% "spray-can" % "1.3.3",
     "io.spray" %% "spray-routing" % "1.3.3",
+    "io.spray" %% "spray-testkit" % "1.3.3",
     "com.esotericsoftware.kryo" % "kryo" % "2.24.0" % "test",
-    "org.scalatest" % "scalatest_2.11" % "2.2.5" % "test")
+    "org.scalatest" %% "scalatest" % "2.2.5" % "test"/*,
+    "org.specs2" %% "specs2-core" % "3.6.5" % "test"*/
+  ),
+  scalacOptions ++= Seq( "-deprecation", "-unchecked" ),
+  scalacOptions in Test ++= Seq("-Yrangepos")
 )
 
 val webappJS = webapp.js

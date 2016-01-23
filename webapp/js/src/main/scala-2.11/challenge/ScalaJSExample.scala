@@ -17,7 +17,7 @@ import scala.util.{Failure, Success}
 object Client extends autowire.Client[Js.Value, Reader, Writer] {
 
   override def doCall(req: Request): Future[Js.Value] = dom.ext.Ajax.post(
-    url = "/api/" + req.path.mkString("/"),
+    url =  req.path.mkString("/api/","/",""),
     data = upickle.json.write(Js.Obj(req.args.toSeq: _*))
   ).map(_.responseText)
     .map(upickle.json.read)
@@ -96,7 +96,7 @@ object ScalaJSExample {
 
     Client[Api].nodeCreate("").call().onComplete {
       case Success(value) =>
-        nodes += js.Dynamic.literal(id = value._2, reflexive = false, x = x0, y = y0, uuid = value._1.toString)
+        nodes += js.Dynamic.literal(id = value._2, reflexive = false,reflexive = true,  x = x0, y = y0, uuid = value._1.toString)
         js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }

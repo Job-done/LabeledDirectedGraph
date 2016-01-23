@@ -24,7 +24,7 @@ Follow these steps to get started:
 
 5. To start the application:
 
-        > re-start
+        > reStart
 
 6. Browse to [http://localhost:8080/](http://localhost:8080/)
     1. Call your friends or colleagues to access your server if you know how to access your computer by IP address.
@@ -32,7 +32,7 @@ Follow these steps to get started:
 
 7. Stop the application:
 
-        > re-stop
+        > reStop
 
 8. [Learn](http://lihaoyi.github.io/hands-on-scala-js/#Autowire) about Autowire in Hands-on Scala.js.
 ## Client usage

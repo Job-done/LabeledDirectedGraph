@@ -3,7 +3,9 @@ package challenge
 import java.util.UUID
 
 trait Api {
-  def readGraph(): Iterable[(java.util.UUID, String, scala.collection.mutable.Set[java.util.UUID])]
+  def readGraph(): Iterable[(UUID,
+    String,
+    scala.collection.mutable.Set[UUID])]
 
   def nodeCreate(id: String): (UUID, String)
   def nodeDelete(uuid: String): Unit
