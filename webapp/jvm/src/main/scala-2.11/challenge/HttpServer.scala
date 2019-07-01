@@ -22,7 +22,7 @@ object Template {
           meta(httpEquiv := "Content-Type", content := "text/html; charset=UTF-8"),
           title("Labeled Directed Graph Challenge"),
           script(src := "/client-fastopt.js"),
-          // script(src := "//localhost:12345/workbench.js"),
+          script(src := "//localhost:12345/workbench.js"),
           script(src := "//d3js.org/d3.v3.min.js", charset := "utf-8"),
           link(rel := "stylesheet", `type` := "text/css", href := "app.css")
         ),

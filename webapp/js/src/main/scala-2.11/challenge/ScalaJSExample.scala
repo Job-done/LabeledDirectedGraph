@@ -50,7 +50,7 @@ object ScalaJSExample {
     * If the node doesn't exist than create it
     */
   @JSExport
-  def GraphSetUp() = {
+  def GraphSetUp(): Unit = {
     def updateOrCreate(uuid: String, name: String) = {
 
       val finding = nodes.find(_.uuid == uuid)
@@ -96,7 +96,7 @@ object ScalaJSExample {
 
     Client[Api].nodeCreate("").call().onComplete {
       case Success(value) =>
-        nodes += js.Dynamic.literal(id = value._2, reflexive = false,reflexive = true,  x = x0, y = y0, uuid = value._1.toString)
+        nodes += js.Dynamic.literal(id = value._2, reflexive = true,  x = x0, y = y0, uuid = value._1.toString)
         js.Dynamic.global.restart()
       case Failure(e) => e.printStackTrace()
     }
